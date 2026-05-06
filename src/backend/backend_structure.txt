@@ -1,0 +1,28 @@
+src/backend/
+├── app/
+│   ├── domain/                     # Core business logic (No external dependencies)
+│   │   ├── entities.py             # Domain models with identity (e.g., MedicalRecord)
+│   │   ├── value_objects.py        # Immutable domain models (e.g., Vitals, Medication)
+│   │   └── ports/                  # Abstract interfaces (Contracts dictated by the domain)
+│   │       ├── inbound/            # Inbound contracts (Interfaces for Use Cases)
+│   │       └── outbound/           # Outbound contracts (Interfaces for DB, LLM, Extractors)
+│   │
+│   ├── application/                # Application orchestration and logic
+│   │   └── use_cases/              # Business logic implementation
+│   │       └── process_record.py   # e.g., Read file -> Extract text -> Prompt LLM -> Save
+│   │
+│   ├── infrastructure/             # Concrete technical adapters (Implementations)
+│   │   ├── inbound/                # Driving adapters (Trigger the application)
+│   │   │   └── api/                # Web layer with FastAPI
+│   │   │       ├── routers.py      # HTTP endpoints (Controllers)
+│   │   │       └── schemas.py      # Pydantic models for Requests/Responses (DTOs)
+│   │   │
+│   │   └── outbound/               # Driven adapters (Triggered by the application)
+│   │       ├── extractors/         # File extraction implementations (e.g., PyMuPDF)
+│   │       ├── llm/                # AI integrations (e.g., OpenAI, Gemini)
+│   │       └── database/           # Data persistence implementations (Repositories)
+│   │
+│   └── main.py                     # FastAPI entry point and Dependency Injection
+│
+├── requirements.txt                # Python dependencies file
+└── venv/                           # Isolated virtual environment

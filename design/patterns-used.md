@@ -1,0 +1,2 @@
+# User Flow
+* **Human-in-the-Loop (HITL)**: Before the ClinicalDocument is processed, or the MedicalRecord list is generated, the human user (veterinarian), who is infront of the screen, has the chance to review the information and execute corrections if needed.

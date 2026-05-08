@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.infrastructure.inbound.api.routers import router as records_router
+from app.infrastructure.inbound.api.routers import documents_router, pets_router
 
 app = FastAPI(
     title="Vet Medical Record Processor API",
@@ -11,14 +11,15 @@ app = FastAPI(
 # Configure CORS for the React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Include API routers
-app.include_router(records_router)
+app.include_router(documents_router)
+app.include_router(pets_router)
 
 @app.get("/health", tags=["System"])
 async def health_check():

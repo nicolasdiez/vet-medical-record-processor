@@ -20,7 +20,7 @@ google-api-core==2.30.3
 google-api-python-client==2.196.0
 google-auth==2.52.0
 google-auth-httplib2==0.4.0
-google-genai==2.0.0
+google-generativeai==0.8.6
 googleapis-common-protos==1.75.0
 grpcio==1.80.0
 grpcio-status==1.71.2
@@ -34,7 +34,6 @@ iniconfig==2.3.0
 instructor==1.15.1
 Jinja2==3.1.6
 jiter==0.13.0
-jsonref==1.1.0
 markdown-it-py==4.2.0
 MarkupSafe==3.0.3
 mdurl==0.1.2

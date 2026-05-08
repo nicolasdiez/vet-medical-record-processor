@@ -1,5 +1,11 @@
 # backend/.gitignore
 
+# Ignore all env files
+.env*
+
+# Ignore real clinical PDFs in fixtures
+src/backend/tests/fixtures/*.pdf
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

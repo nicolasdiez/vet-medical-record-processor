@@ -1,64 +1,102 @@
-// src/frontend/src/components/UploadZone.jsx
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { processClinicalDocument } from '../services/api';
 
-export default function UploadZone({ onFileSelect }) {
-  const [isDragging, setIsDragging] = useState(false);
+export default function UploadZone() {
+    // State management without TypeScript annotations
+    const [isDragging, setIsDragging] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [extractionResult, setExtractionResult] = useState(null);
+    const [error, setError] = useState(null);
+    const fileInputRef = useRef(null);
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
 
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      onFileSelect(file);
-    }
-  };
+    const handleDrop = async (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const files = Array.from(e.dataTransfer.files);
+        if (files.length > 0) {
+            await uploadFile(files[0]);
+        }
+    };
 
-  const handleFileInput = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      onFileSelect(file);
-    }
-  };
+    const handleFileSelect = async (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            await uploadFile(e.target.files[0]);
+        }
+    };
 
-  return (
-    <div 
-      className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors
-        ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400 bg-gray-50'}
-      `}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      <div className="flex flex-col items-center justify-center space-y-4">
-        <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-        </svg>
-        <div className="text-gray-600">
-          <span className="font-semibold text-blue-600 hover:text-blue-800">Click to upload</span> or drag and drop
+    const uploadFile = async (file) => {
+        setIsLoading(true);
+        setError(null);
+        setExtractionResult(null);
+
+        try {
+            const data = await processClinicalDocument(file);
+            setExtractionResult(data);
+        } catch (err) {
+            setError(err.message || 'Failed to process document');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="p-8 max-w-4xl mx-auto">
+            {/* Upload Area */}
+            <div
+                className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors
+                    ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current.click()}
+            >
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    onChange={handleFileSelect}
+                />
+                
+                {isLoading ? (
+                    <div className="text-blue-600 font-semibold animate-pulse">
+                        Processing document with AI...
+                    </div>
+                ) : (
+                    <div className="text-gray-600">
+                        <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop
+                        <p className="text-sm mt-2 text-gray-500">PDF, PNG, or JPG</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Error Message */}
+            {error && (
+                <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-md">
+                    {error}
+                </div>
+            )}
+
+            {/* Results Area (Phase 1 Mock visualization) */}
+            {extractionResult && (
+                <div className="mt-8">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">AI Extraction Result (Mock)</h3>
+                    <div className="bg-gray-900 rounded-lg p-4 overflow-auto max-h-96 text-left">
+                        <pre className="text-green-400 text-sm font-mono">
+                            {JSON.stringify(extractionResult, null, 2)}
+                        </pre>
+                    </div>
+                </div>
+            )}
         </div>
-        <p className="text-sm text-gray-500">PDF, Word, or Images (Max 10MB)</p>
-      </div>
-      <input 
-        type="file" 
-        className="hidden" 
-        onChange={handleFileInput}
-        id="file-upload"
-        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-      />
-      <label htmlFor="file-upload" className="absolute inset-0 cursor-pointer text-transparent">
-        Upload file
-      </label>
-    </div>
-  );
+    );
 }

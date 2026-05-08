@@ -5,7 +5,7 @@ from app.domain.entities import Pet, MedicalRecord
 
 class FileTextExtractorPort(ABC):
     """
-    Contract for extracting raw text from various file formats (PDF, Word, Images).
+    Contract for extracting raw clinical text from various file formats (PDF, Word, Images).
     """
     @abstractmethod
     async def extract_text(self, file_content: bytes, filename: str) -> str:

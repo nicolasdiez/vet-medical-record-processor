@@ -1,10 +1,10 @@
 import pytest
 import os
-from app.infrastructure.outbound.adapters.pdf_text_extractor import PDFFileTextExtractorAdapter
+from backend.app.infrastructure.outbound.pdf_text_extractor import PDFFileTextExtractorAdapter
 
 # Resolve the absolute path to the fixtures directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FIXTURES_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../../fixtures"))
+FIXTURES_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../../../fixtures"))
 
 @pytest.fixture
 def extractor() -> PDFFileTextExtractorAdapter:

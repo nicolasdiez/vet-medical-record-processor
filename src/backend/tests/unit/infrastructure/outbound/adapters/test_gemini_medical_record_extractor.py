@@ -1,7 +1,7 @@
 import pytest
 import os
 from dotenv import load_dotenv
-from app.infrastructure.outbound.adapters.gemini_medical_record_extractor import LLMGeminiMedicalRecordExtractorAdapter
+from backend.app.infrastructure.outbound.gemini_medical_record_extractor import LLMGeminiMedicalRecordExtractorAdapter
 from app.domain.entities import Pet, MedicalRecord
 from app.config import settings
 

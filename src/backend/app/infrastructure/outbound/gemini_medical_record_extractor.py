@@ -17,7 +17,7 @@ class LLMGeminiMedicalRecordExtractorAdapter(MedicalRecordExtractorPort):
         # Initialize the modern Google GenAI client
         self.client = genai.Client(api_key=api_key)
         
-        # Patch using the new from_genai method and the correct Mode
+        # Config the instructor
         self.instructor_client = instructor.from_genai(
             client=self.client,
             mode=instructor.Mode.GENAI_STRUCTURED_OUTPUTS,

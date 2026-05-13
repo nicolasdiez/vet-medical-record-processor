@@ -1,10 +1,27 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends
 from typing import List
-from datetime import date
+
+from app.domain.entities import Pet, MedicalRecord
+from app.application.use_cases.extract_clinical_data import ExtractClinicalDataUseCase
+from app.application.use_cases.save_clinical_data import SaveClinicalDataUseCase
+from app.infrastructure.outbound.pdf_text_extractor import PDFFileTextExtractorAdapter
 from .schemas import (
-    ProcessDocumentResponse, PetResponse, PetCreateDTO, 
-    MedicalRecordResponse, MedicalRecordCreateDTO
+    ProcessDocumentResponse, PetCreateDTO, 
+    MedicalRecordCreateDTO, MedicalRecordResponse, ClinicalDataSaveDTO
 )
+from app.application.use_cases.get_pet_clinical_history import GetPetClinicalHistoryUseCase
+
+# ---------------------------------------------------------
+# FastAPI Dependency Injection Mechanism - Placeholders (Implemented in main.py)
+# ---------------------------------------------------------
+async def get_extract_use_case() -> ExtractClinicalDataUseCase:
+    raise NotImplementedError()
+
+async def get_save_use_case() -> SaveClinicalDataUseCase:
+    raise NotImplementedError()
+
+async def get_history_use_case() -> GetPetClinicalHistoryUseCase:
+    raise NotImplementedError()
 
 # ---------------------------------------------------------
 # Router 1: Clinical Documents (Phase 1: AI Processing)
@@ -16,107 +33,99 @@ documents_router = APIRouter(prefix="/api/v1/clinical-documents", tags=["Clinica
     response_model=ProcessDocumentResponse,
     summary="Process a clinical document (No persistence)"
 )
-async def process_document(file: UploadFile = File(...)):
-    """
-    Phase 1 of the Human-in-the-Loop flow: AI Processing.
-    
-    This endpoint receives a clinical document (e.g., PDF, Image), extracts the 
-    raw text using an OCR/PDF parser, and utilizes an LLM to map the unstructured 
-    medical jargon into structured domain entities (Pet and MedicalRecords).
-    
-    CRITICAL: This endpoint does NOT persist data to the database. It returns 
-    the extracted data payload so the frontend can display it in a split-screen 
-    UI for human validation and editing.
-    """
+async def process_document(
+    file: UploadFile = File(...),
+    use_case: ExtractClinicalDataUseCase = Depends(get_extract_use_case)
+):
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
+
+    # Strategy Pattern: Inject the correct extractor adapter
+    if file.content_type == "application/pdf":
+        extractor = PDFFileTextExtractorAdapter()
+    else:
+        raise HTTPException(status_code=400, detail=f"Unsupported file type: {file.content_type}")
+
+    file_content = await file.read()
+
+    try:
+        # Execute the Application layer Use Case
+        domain_pet, domain_records = await use_case.execute(file_content, file.filename, extractor)
         
-    # TODO: Pass the file to the Application Layer (ProcessRecordUseCase) here.
-    # The following is a mock response to simulate the AI extraction output.
-    return ProcessDocumentResponse(
-        filename=file.filename,
-        status="processed",
-        message="Document analyzed successfully. Waiting for human validation.",
-        pet_id=None, # Indicates a new pet scenario (not found in DB)
-        extracted_pet=PetCreateDTO(name="Max", species="Dog", breed="Golden Retriever"),
-        extracted_records=[
-            MedicalRecordCreateDTO(
-                date=date.today(),
-                diagnosis="Routine checkup, healthy. No abnormalities detected.",
-                medications=[]
-            )
-        ]
-    )
+        # Map Domain Entities back to DTOs for the response
+        pet_dto = None
+        pet_id = None
+        if domain_pet:
+            pet_id = domain_pet.id
+            pet_dto = PetCreateDTO(**domain_pet.model_dump())
+            
+        records_dto = [MedicalRecordCreateDTO(**rec.model_dump()) for rec in domain_records]
+
+        return ProcessDocumentResponse(
+            filename=file.filename,
+            status="processed",
+            message="Document analyzed successfully. Waiting for human validation.",
+            pet_id=pet_id,
+            extracted_pet=pet_dto,
+            extracted_records=records_dto
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ---------------------------------------------------------
-# Router 2: Pets & Medical Records (Phase 3: Persistence)
+# Router 2: Clinical Data (Phase 3: Persistence)
 # ---------------------------------------------------------
-pets_router = APIRouter(prefix="/api/v1/pets", tags=["Pets & Medical Records"])
+clinical_data_router = APIRouter(prefix="/api/v1/clinical-data", tags=["Clinical Data Persistence"])
 
-@pets_router.post(
+@clinical_data_router.post(
     "", 
-    response_model=PetResponse, 
     status_code=status.HTTP_201_CREATED,
-    summary="Create a new Pet"
+    summary="Atomically save validated Pet and Medical Records"
 )
-async def create_pet(pet_in: PetCreateDTO): 
+async def save_clinical_data(
+    payload: ClinicalDataSaveDTO,
+    use_case: SaveClinicalDataUseCase = Depends(get_save_use_case)
+):
     """
     Phase 3 of the Human-in-the-Loop flow: Persistence.
-    
-    Creates a new Pet entity in the database. This endpoint is called by the 
-    frontend ONLY after the veterinarian has reviewed and approved the AI-extracted 
-    data. The database will generate and return the unique Pet ID.
+    Receives the unified, human-corrected payload and persists it atomically.
     """
-    # TODO: Pass to Application Layer / Repository to execute INSERT
-    # Mocking the DB insertion response:
-    return PetResponse(id="new_pet_123", **pet_in.model_dump())
+    try:
+        # Map DTOs back to Domain Entities
+        domain_pet = Pet(**payload.pet.model_dump())
+        domain_records = [MedicalRecord(**rec.model_dump()) for rec in payload.records]
+        
+        # Execute the Use Case (Handles the DB transaction commit/rollback)
+        await use_case.execute(domain_pet, domain_records)
+        
+        return {"message": "Clinical data successfully persisted."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-@pets_router.put(
-    "/{pet_id}", 
-    response_model=PetResponse,
-    summary="Update an existing Pet"
-)
-async def update_pet(pet_id: str, pet_in: PetCreateDTO):
-    """
-    Phase 3 of the Human-in-the-Loop flow: Persistence (Update).
-    
-    Updates an existing Pet entity in the database. Used when the AI correctly 
-    identified an existing pet, but the user made manual corrections to its static 
-    information (e.g., fixing a typo in the breed) during the review phase.
-    """
-    # TODO: Pass to Application Layer / Repository to execute UPDATE
-    return PetResponse(id=pet_id, **pet_in.model_dump())
 
-@pets_router.post(
-    "/{pet_id}/medical-records", 
-    response_model=List[MedicalRecordResponse], 
-    status_code=status.HTTP_201_CREATED,
-    summary="Persist validated medical records"
-)
-async def create_medical_records(pet_id: str, records_in: List[MedicalRecordCreateDTO]):
-    """
-    Phase 3 of the Human-in-the-Loop flow: Persistence.
-    
-    Persists a list of medical records (including their value objects like Vitals 
-    and Medications) associated with a specific pet. Called after the user has 
-    validated the extracted diagnoses.
-    """
-    # TODO: Pass to Application Layer / Repository to execute INSERT
-    # Mocking the DB insertion response:
-    return [
-        MedicalRecordResponse(id=f"rec_{i}", pet_id=pet_id, **rec.model_dump()) 
-        for i, rec in enumerate(records_in)
-    ]
+# ---------------------------------------------------------
+# Router 3: Pet History (For GET requests)
+# ---------------------------------------------------------
+pets_router = APIRouter(prefix="/api/v1/pets", tags=["Pets History"])
 
 @pets_router.get(
     "/{pet_id}/medical-records", 
     response_model=List[MedicalRecordResponse],
     summary="Retrieve full clinical history"
 )
-async def list_pet_medical_records(pet_id: str):
+async def list_pet_medical_records(
+    pet_id: str,
+    use_case: GetPetClinicalHistoryUseCase = Depends(get_history_use_case)
+):
     """
     Retrieves the complete clinical history (all medical records) associated 
     with a specific pet. Used by the frontend to display the patient's timeline.
     """
-    # TODO: Fetch from Application Layer / Repository
-    return []
+    try:
+        domain_records = await use_case.execute(pet_id)
+        
+        # Map domain entities to DTOs
+        return [MedicalRecordResponse(**rec.model_dump()) for rec in domain_records]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

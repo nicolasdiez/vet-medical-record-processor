@@ -24,12 +24,26 @@ class PetRepositoryPort(ABC):
     """
     Contract for persisting and retrieving Pet entities.
     """
+    
     @abstractmethod
-    async def save(self, pet: Pet) -> Pet:
+    async def save(self, pet: Pet) -> None:
+        """
+        Inserts a new pet or updates an existing one.
+        """
         pass
 
     @abstractmethod
     async def get_by_id(self, pet_id: str) -> Optional[Pet]:
+        """
+        Retrieves a pet by its unique identifier.
+        """
+        pass
+
+    @abstractmethod
+    async def find_by_name_and_species(self, name: str, species: str) -> Optional[Pet]:
+        """
+        Finds a pet by its name and species (used in Phase 1 to check for existing pets).
+        """
         pass
 
 class MedicalRecordRepositoryPort(ABC):

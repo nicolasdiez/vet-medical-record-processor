@@ -119,22 +119,22 @@ const RecordItem = ({ control, register, index, removeRecord }) => {
           {medFields.map((med, medIndex) => (
             <div key={med.id} className="flex gap-2 items-start">
               <input 
-                placeholder="Amoxicillin"
+                placeholder="e.g. Amoxicillin"
                 {...register(`medical_records.${index}.medications.${medIndex}.name`)}
                 className="w-1/3 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500"
               />
               <input 
-                placeholder="10mg"
+                placeholder="e.g. 10mg"
                 {...register(`medical_records.${index}.medications.${medIndex}.dosage`)}
                 className="w-1/5 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500"
               />
               <input 
-                placeholder="2x/day"
+                placeholder="e.g. 2x/day"
                 {...register(`medical_records.${index}.medications.${medIndex}.frequency`)}
                 className="w-1/5 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500"
               />
               <input 
-                placeholder="7 days"
+                placeholder="e.g. 7 days"
                 {...register(`medical_records.${index}.medications.${medIndex}.duration`)}
                 className="w-1/5 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500"
               />

@@ -1,15 +1,17 @@
-import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
+
+# --- Config ---
+from app.config import settings
 
 # --- Routers ---
 from app.infrastructure.inbound.api.routers import (
     documents_router, 
     pets_router, 
     clinical_data_router,
-    # The placeholder functions than need to be overriden:
+    # The placeholder functions than need to be overriden with injections:
     get_extract_use_case, 
     get_save_use_case, 
     get_history_use_case
@@ -66,7 +68,7 @@ app.include_router(clinical_data_router)
 
 
 # ==============================================================================
-# DEPENDENCY INJECTION WIRING (The core of Hexagonal Architecture)
+# FastAPI ROUTERS DEPENDENCY INJECTION WIRING (The core of Hexagonal Architecture)
 # ==============================================================================
 
 async def get_db_session() -> AsyncSession: # type: ignore
@@ -76,11 +78,11 @@ async def get_db_session() -> AsyncSession: # type: ignore
 
 async def build_extract_use_case(session: AsyncSession = Depends(get_db_session)) -> ExtractClinicalDataUseCase:
     pet_repo = SQLPetRepositoryAdapter(session)
-
-    api_key = os.getenv("GEMINI_API_KEY", "test_dummy_key")
-    model_id = os.getenv("GEMINI_MODEL_ID", "gemini-1.5-flash")
     
-    medical_extractor = LLMGeminiMedicalRecordExtractorAdapter(api_key=api_key, model_id=model_id)
+    medical_extractor = LLMGeminiMedicalRecordExtractorAdapter(
+        api_key=settings.GEMINI_API_KEY, 
+        model_id=settings.GEMINI_MODEL
+    )
     
     return ExtractClinicalDataUseCase(
         medical_extractor=medical_extractor,
@@ -108,6 +110,7 @@ app.dependency_overrides[get_save_use_case] = build_save_use_case
 app.dependency_overrides[get_history_use_case] = build_history_use_case
 
 
+# App health check
 @app.get("/health", tags=["System"])
 async def health_check():
     return {"status": "ok", "message": "Backend is running successfully!"}

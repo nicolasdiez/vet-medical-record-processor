@@ -11,9 +11,16 @@ uvicorn app.main:app --reload
 # FastAPI OpenAPI spec (swagger) and DTOs
 http://localhost:8000/docs
 
+# FastAPI health check
+http://localhost:8000/health
+
 # Run backend unit tests
 cd src/backend/
 PYTHONPATH=. pytest tests/ -v
+
+# Run backend end2end tests
+cd src/backend/
+pytest tests/e2e/test_api.py -v
 
 
 ## FRONTEND ##

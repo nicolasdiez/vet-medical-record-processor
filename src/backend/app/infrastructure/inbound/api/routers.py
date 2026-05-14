@@ -70,6 +70,7 @@ async def process_document(
             extracted_records=records_dto
         )
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -1,12 +1,8 @@
 import pytest
-import os
-from dotenv import load_dotenv
+from app.config import settings
 from backend.app.infrastructure.outbound.gemini_medical_record_extractor import LLMGeminiMedicalRecordExtractorAdapter
 from app.domain.entities import Pet, MedicalRecord
-from app.config import settings
 
-# Load environment variables for the test context
-load_dotenv(".env.dev")
 
 @pytest.fixture
 def api_key() -> str:
@@ -14,9 +10,9 @@ def api_key() -> str:
     Retrieves the API key from the environment. 
     Skips the test if the key is not present to prevent CI/CD failures.
     """
-    key = os.getenv("GEMINI_API_KEY")
-    if not key:
-        pytest.skip("GEMINI_API_KEY not found in .env.dev. Skipping real LLM integration test.")
+    key = settings.GEMINI_API_KEY
+    if not key or key == "test_dummy_key":
+        pytest.skip("Valid GEMINI_API_KEY not found. Skipping real LLM integration test.")
     return key
 
 @pytest.fixture

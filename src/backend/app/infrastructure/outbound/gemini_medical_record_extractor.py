@@ -28,6 +28,9 @@ class LLMGeminiMedicalRecordExtractorAdapter(MedicalRecordExtractorPort):
             "You are an expert veterinary assistant. Extract all clinical information "
             "from the following text. Identify the pet's details and every medical "
             "encounter (diagnosis, vitals, and medications). "
+            "CRITICAL: All extracted text values (such as diagnosis, breed, species, "
+            "medication names, and clinical instructions) MUST be translated to or "
+            "written strictly in Spanish (Castilian). "
             f"Text to process: {text}"
         )
 

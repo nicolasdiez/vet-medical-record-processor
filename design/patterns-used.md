@@ -9,5 +9,6 @@
 
 # Solution Architecture Patterns
 
-* **Postgre DB**
-* **Gemini LLM**
+* **Postgre DB**:
+* **Gemini LLM**: 
+* **LLM Schema Engineering** (or "Prompting via Schema"): technique that uses structured data formats—such as JSON, XML, or database schemas—to guide large language models (LLMs) to produce precise, consistent, and machine-readable outputs

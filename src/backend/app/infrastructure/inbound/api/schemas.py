@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import date
 
+
 # --- Value Object DTOs ---
 
 class VitalsDTO(BaseModel):
@@ -25,6 +26,7 @@ class MedicationDTO(BaseModel):
     frequency: str = Field(..., description="How often the medication is administered")
     duration: Optional[str] = Field(None, description="How long the treatment lasts")
 
+
 # --- Pets DTOs ---
 
 class PetCreateDTO(BaseModel):
@@ -43,6 +45,7 @@ class PetResponse(PetCreateDTO):
     Includes the system-generated unique ID.
     """
     id: str
+
 
 # --- Medical Records DTOs ---
 
@@ -64,6 +67,7 @@ class MedicalRecordResponse(MedicalRecordCreateDTO):
     id: str
     pet_id: str
 
+
 # --- Clinical Documents DTOs (Phase 1 AI Response) ---
 
 class ProcessDocumentResponse(BaseModel):
@@ -78,6 +82,7 @@ class ProcessDocumentResponse(BaseModel):
     pet_id: Optional[str] = Field(None, description="Existing Pet ID if found in DB")
     extracted_pet: Optional[PetCreateDTO] = Field(None, description="Pet data extracted by AI")
     extracted_records: List[MedicalRecordCreateDTO] = Field(default_factory=list, description="Records extracted by AI")
+
 
 # --- Clinical Data DTO (Phase 3 Persistence) ---
 

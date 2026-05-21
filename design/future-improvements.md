@@ -1,0 +1,1 @@
+* **Enforce controlled vocabularies via Constrained Decoding**: Use Pydantic `Enum` classes for attributes like `Pet.species` to strictly restrict the LLM's output to predefined exact values (e.g., enforcing "perro" and preventing variations like "canino"), ensuring absolute data consistency.

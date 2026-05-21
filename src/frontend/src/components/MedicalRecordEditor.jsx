@@ -171,21 +171,29 @@ export default function MedicalRecordEditor({ initialData, onSave }) {
     name: "medical_records"
   });
 
-  useEffect(() => {
+useEffect(() => {
     if (initialData) {
       const payload = initialData.data || initialData;
 
-      // Safe mapping using the exact keys from VitalsDTO
-      const safeRecords = (payload.extracted_records || []).map(rec => ({
-        ...rec,
-        vitals: {
-          weight_kg: rec.vitals?.weight_kg ?? '',
-          temperature_c: rec.vitals?.temperature_c ?? '',
-          heart_rate_bpm: rec.vitals?.heart_rate_bpm ?? '',
-          respiratory_rate_bpm: rec.vitals?.respiratory_rate_bpm ?? ''
-        },
-        medications: rec.medications || []
-      }));
+      // 1. Map keys safely, and then SORT by date descending (newest first)
+      const safeRecords = (payload.extracted_records || [])
+        .map(rec => ({
+          ...rec,
+          vitals: {
+            weight_kg: rec.vitals?.weight_kg ?? '',
+            temperature_c: rec.vitals?.temperature_c ?? '',
+            heart_rate_bpm: rec.vitals?.heart_rate_bpm ?? '',
+            respiratory_rate_bpm: rec.vitals?.respiratory_rate_bpm ?? ''
+          },
+          medications: rec.medications || []
+        }))
+        .sort((a, b) => {
+          // Convert date strings to timestamps for comparison. 
+          // If a date is missing, treat it as 0 (oldest) so it goes to the bottom.
+          const timeA = a.date ? new Date(a.date).getTime() : 0;
+          const timeB = b.date ? new Date(b.date).getTime() : 0;
+          return timeB - timeA; // Descending order
+        });
 
       reset({
         pet: { 

@@ -77,7 +77,7 @@ export default function UploadZone({ onUploadSuccess }) {
                         </svg>
                         <span className="font-semibold text-blue-600 text-lg">Click to upload</span> 
                         <span>or drag and drop here</span>
-                        <p className="text-sm mt-2 text-gray-400">Supported formats: PDF, PNG, JPG</p>
+                        <p className="text-sm mt-2 text-gray-400">Supported formats: PDF</p>
                     </div>
                 )}
             </div>

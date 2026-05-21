@@ -4,7 +4,7 @@
 cd src/backend
 source venv/Scripts/activate
 
-# Run backend server FastAPI server (with auto-reload)
+# Run backend server FastAPI (with auto-reload)
 cd src/backend/
 uvicorn app.main:app --reload
 

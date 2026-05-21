@@ -12,7 +12,7 @@ from app.domain.entities import Pet, MedicalRecord
 mock_pet_id = str(uuid.uuid4())
 mock_record_id = str(uuid.uuid4())
 
-# Random pet name so the test can be executed in isolation every time
+# Random pet name so the test can be executed in isolation every time (no collisions in DB)
 unique_name = f"Rex_{mock_pet_id[:8]}"
 
 # Create entities

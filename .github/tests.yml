@@ -1,0 +1,41 @@
+name: Backend Tests CI
+
+# Trigger the workflow on ANY push to ANY branch, and on PRs targeting main/master
+on:
+  push:
+  # By not specifying branches here, it defaults to running on ALL branches
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    name: Run Unit and E2E Tests
+    runs-on: ubuntu-latest
+    
+    # Set the default working directory for all run commands to the backend folder
+    defaults:
+      run:
+        working-directory: ./src/backend
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' # This should match the Python version used locally
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest httpx pytest-asyncio
+
+    - name: Run Pytest
+      # Inject the environment variable required for the LLM to work during tests
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      run: |
+        pytest -v

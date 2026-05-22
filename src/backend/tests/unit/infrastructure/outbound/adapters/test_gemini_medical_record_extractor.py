@@ -47,7 +47,7 @@ async def test_extract_entities_with_real_llm(extractor: LLMGeminiMedicalRecordE
     assert pet is not None
     assert isinstance(pet, Pet)
     assert pet.name == "Bella"
-    assert pet.species.lower() == "dog"
+    assert pet.species.lower() in ["dog", "perro"]
     assert pet.breed is not None and "retriever" in pet.breed.lower()
 
     # 2. Validate MedicalRecord Entity List

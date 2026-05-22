@@ -19,6 +19,8 @@ unique_name = f"Rex_{mock_pet_id[:8]}"
 mock_pet = Pet(id=mock_pet_id, name=unique_name, species="Dog", breed="Labrador")
 mock_record = MedicalRecord(id=mock_record_id, pet_id=mock_pet_id, date=date.today(), diagnosis="Healthy dog")
 
+# Using FastAPI TestClient which wraps the async routes to make them sync (blocking).
+# Because the test method does not use await functions, the test method does not need async decorator 
 def test_full_clinical_flow_e2e():
     """
     Tests the complete happy path:

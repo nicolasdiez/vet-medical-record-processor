@@ -37,5 +37,7 @@ jobs:
       # Inject the environment variable required for the LLM to work during tests
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        # Point PYTHONPATH to the 'src' directory so 'from backend.app...' imports work correctly
+        PYTHONPATH: ${{ github.workspace }}/src
       run: |
         pytest -v

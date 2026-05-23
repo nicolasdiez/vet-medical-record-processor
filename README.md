@@ -48,7 +48,7 @@ Create a `.env.dev` file in the `src/backend` directory:
 
 Run the FastAPI server:
 
-    fastapi dev app/main.py
+    uvicorn app.main:app --reload
 
 ### 2. Frontend Setup
 Open a new terminal, navigate to the frontend directory, and install dependencies:

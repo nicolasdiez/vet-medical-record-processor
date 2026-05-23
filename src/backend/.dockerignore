@@ -1,0 +1,22 @@
+# src/backend/.dockerignore
+
+# Virtual environments
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Environment variables (these should be injected at runtime, not baked into the image)
+.env
+.env.dev
+
+# Local database (we don't want to copy local test data into the production image)
+vet_clinic.db
+
+# Git
+.git/

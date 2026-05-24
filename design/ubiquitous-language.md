@@ -16,3 +16,4 @@
 *Transient or infrastructure-related concepts used for data processing.*
 
 * **ClinicalDocument**: The raw, unstructured source file (PDF, Word or Image) provided by the veterinarian. It acts as a data container that is processed to extract domain entities.
+* **Draft / Pending Validation**: The ephemeral state of a `Pet` or `MedicalRecord` right after being extracted by the AI. It exists in a "waiting area" until the human veterinarian explicitly reviews, corrects, and approves it for persistence.

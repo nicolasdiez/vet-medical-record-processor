@@ -1,0 +1,7 @@
+# src/frontend/.dockerignore
+
+node_modules/
+dist/
+.env
+.env.*
+.git/

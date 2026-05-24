@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends
 from typing import List
 
 from app.domain.entities import Pet, MedicalRecord
-from app.application.use_cases.extract_clinical_data import ExtractClinicalDataUseCase
+from app.domain.ports.inbound.interfaces import ExtractClinicalDataUseCasePort, SaveClinicalDataUseCasePort, GetPetClinicalHistoryUseCasePort
 from app.application.use_cases.save_clinical_data import SaveClinicalDataUseCase
 from app.infrastructure.outbound.pdf_text_extractor import PDFFileTextExtractorAdapter
 from .schemas import (
@@ -12,15 +12,15 @@ from .schemas import (
 from app.application.use_cases.get_pet_clinical_history import GetPetClinicalHistoryUseCase
 
 # ---------------------------------------------------------
-# FastAPI Dependency Injection Mechanism - Placeholders (Implemented in main.py)
+# FastAPI Dependency Injection Mechanism - Placeholders (Injected from main.py)
 # ---------------------------------------------------------
-async def get_extract_use_case() -> ExtractClinicalDataUseCase:
+async def get_extract_use_case() -> ExtractClinicalDataUseCasePort:
     raise NotImplementedError()
 
-async def get_save_use_case() -> SaveClinicalDataUseCase:
+async def get_save_use_case() -> SaveClinicalDataUseCasePort:
     raise NotImplementedError()
 
-async def get_history_use_case() -> GetPetClinicalHistoryUseCase:
+async def get_history_use_case() -> GetPetClinicalHistoryUseCasePort:
     raise NotImplementedError()
 
 # ---------------------------------------------------------
@@ -35,7 +35,7 @@ documents_router = APIRouter(prefix="/api/v1/clinical-documents", tags=["Clinica
 )
 async def process_document(
     file: UploadFile = File(...),
-    use_case: ExtractClinicalDataUseCase = Depends(get_extract_use_case)
+    use_case: ExtractClinicalDataUseCasePort = Depends(get_extract_use_case)
 ):
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
@@ -86,7 +86,7 @@ clinical_data_router = APIRouter(prefix="/api/v1/clinical-data", tags=["Clinical
 )
 async def save_clinical_data(
     payload: ClinicalDataSaveDTO,
-    use_case: SaveClinicalDataUseCase = Depends(get_save_use_case)
+    use_case: SaveClinicalDataUseCasePort = Depends(get_save_use_case)
 ):
     """
     Phase 3 of the Human-in-the-Loop flow: Persistence.
@@ -117,7 +117,7 @@ pets_router = APIRouter(prefix="/api/v1/pets", tags=["Pets History"])
 )
 async def list_pet_medical_records(
     pet_id: str,
-    use_case: GetPetClinicalHistoryUseCase = Depends(get_history_use_case)
+    use_case: GetPetClinicalHistoryUseCasePort = Depends(get_history_use_case)
 ):
     """
     Retrieves the complete clinical history (all medical records) associated 

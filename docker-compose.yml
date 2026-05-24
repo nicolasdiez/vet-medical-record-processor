@@ -1,0 +1,30 @@
+name: vet-medical-record-processor-stack
+
+services:
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    container_name: vet_backend
+    # Map the host port 8000 to the container port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      # Inject the API key from the root .env file into the container
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ENVIRONMENT=production
+    # Automatically restart the container if it crashes
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    container_name: vet_frontend
+    # Map the host port 8080 (localhost in dev) to the container port 80 (Nginx)
+    ports:
+      - "8080:80"
+    # Ensure the backend starts before the frontend
+    depends_on:
+      - backend
+    restart: unless-stopped

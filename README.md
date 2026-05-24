@@ -64,8 +64,46 @@ The application will be available at `http://localhost:5173`.
 
 ---
 
-## 🐳 Docker Deployment (Coming Soon)
-*The containerization of this application is currently in progress. A `docker-compose.yml` will be provided shortly to spin up the entire stack with a single command.*
+## 🐳 Getting Started (Docker Deployment)
+
+You can run the entire application stack (Frontend, Backend, Database, and Network) in isolated containers using Docker Compose.
+
+### Prerequisites
+* Docker and Docker Compose installed.
+* **For Windows users:** WSL 2 (Windows Subsystem for Linux) is required.
+  * To install WSL, open PowerShell as Administrator and run: `wsl --install`
+  * Restart your computer and set up your Linux username/password.
+  * If using **Git Bash**, simply type `wsl` to enter the Linux environment. Then, to install the lightweight **Docker Engine** without the heavy Docker Desktop app, run:
+    `curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh`
+  * Finally, start the Docker service with: `sudo service docker start`
+
+### 1. Environment Setup
+Create a `.env` file in the **root** directory of the project and add your Gemini API Key:
+
+    GEMINI_API_KEY=your_api_key_here
+
+### 2. Run the Stack
+Execute the following command from the root directory to build and start the containers in detached mode:
+
+    docker compose up -d --build
+
+*(Note: On Linux or WSL environments, you might need to use `sudo docker compose up -d --build` depending on your user permissions).*
+
+### 3. Access the Application
+Once the containers are up and running, the Nginx web server will serve the frontend at:
+
+    http://localhost:8080
+
+*(The backend API will be running internally on port 8000 and exposed if needed for direct queries).*
 
 ---
-*Developed as a proof-of-concept for AI-driven clinical workflow automation.*
+
+## ⚖️ License & Copyright
+
+**© 2026 Nicolás Diez Risueño. All rights reserved.**
+
+This repository and its entire contents, including but not limited to the source code, system architecture, database schema, design patterns, UX/UI layouts, and underlying structural concepts, are strictly proprietary and confidential. 
+
+Any unauthorized use, reproduction, modification, distribution, or structural imitation (including conceptual cloning, architectural adaptation, or using the core design logic as a blueprint for internal or commercial workflows) without explicit written permission from the author is strictly prohibited. This project is protected under international copyright and intellectual property laws.
+
+---

@@ -56,7 +56,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], 
+    allow_origins=[
+        "http://localhost:5173",     # Frontend deployed in local dev env (Vite)
+        "http://localhost:8080",    # Frontend deployed in pro env (Docker Nginx)
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -91,17 +94,17 @@ async def build_extract_use_case(session: AsyncSession = Depends(get_db_session)
 
 async def build_save_use_case(session: AsyncSession = Depends(get_db_session)) -> SaveClinicalDataUseCase:
     pet_repo = SQLPetRepositoryAdapter(session)
-    med_repo = SQLMedicalRecordRepositoryAdapter(session)
+    medical_repo = SQLMedicalRecordRepositoryAdapter(session)
     
     return SaveClinicalDataUseCase(
         pet_repository=pet_repo,
-        medical_record_repository=med_repo,
+        medical_record_repository=medical_repo,
         session=session
     )
 
 async def build_history_use_case(session: AsyncSession = Depends(get_db_session)) -> GetPetClinicalHistoryUseCase:
-    med_repo = SQLMedicalRecordRepositoryAdapter(session)
-    return GetPetClinicalHistoryUseCase(medical_record_repository=med_repo)
+    medical_repo = SQLMedicalRecordRepositoryAdapter(session)
+    return GetPetClinicalHistoryUseCase(medical_record_repository=medical_repo)
 
 
 # Overriding the router placeholders with our actual factory functions

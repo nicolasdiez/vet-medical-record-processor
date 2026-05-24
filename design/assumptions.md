@@ -1,6 +1,8 @@
-### Pet Identity Resolution Heuristic (MVP vs. Future Iterations)
+# Assumptions
 
-**Assumption:** During Phase 1 (AI Processing & Extraction), the system attempts to automatically reconcile the extracted pet with existing records in the database to prevent duplicates. For this MVP, we assume that a pet can be identified by the combination of its `name` and `species` (e.g., "Bella" + "Dog").
+## Pet Identity Resolution Heuristic (MVP vs. Future Iterations)
+
+**Assumption:** During Phase 1 (AI Processing & Medical Records Extraction), the system attempts to automatically reconcile the extracted pet with existing records in the database to prevent duplicates. For this MVP, we assume that a pet can be identified by the combination of its `name` and `species` (e.g., "Bella" + "Dog").
 
 **Known Limitation:** We acknowledge that this is an imperfect heuristic that could lead to collisions (false positives), as it is highly probable for a veterinary clinic to have multiple patients of the same species sharing common names.
 

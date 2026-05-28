@@ -13,3 +13,6 @@
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Allow environment variables template
+!.env.example

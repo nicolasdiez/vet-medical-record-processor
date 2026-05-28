@@ -36,10 +36,12 @@ This project strictly follows **Hexagonal Architecture (Ports and Adapters)** on
 ### 1. Backend Setup
 Navigate to the backend directory, create a virtual environment, and install dependencies:
 
+    ```bash
     cd src/backend
     python -m venv venv
     source venv/bin/activate  # On Windows: venv\Scripts\activate
     pip install -r requirements.txt
+    ```
 
 Create a `.env.dev` file in the `src/backend` directory:
 
@@ -48,17 +50,23 @@ Create a `.env.dev` file in the `src/backend` directory:
 
 Run the FastAPI server:
 
+    ```bash
     uvicorn app.main:app --reload
+    ```
 
 ### 2. Frontend Setup
 Open a new terminal, navigate to the frontend directory, and install dependencies:
 
+    ```bash
     cd src/frontend
     npm install
+    ```
 
 Start the Vite development server:
 
+    ```bash
     npm run dev
+    ```
 
 The application will be available at `http://localhost:5173`.
 
@@ -83,11 +91,13 @@ Create a `.env` file in the **root** directory of the project and add your Gemin
     GEMINI_API_KEY=your_api_key_here
 
 ### 2. Run the Stack
-Execute the following command from the root directory to build and start the containers in detached mode:
+Execute the following command from the root directory to build and start the containers in detached mode. 
 
-    docker compose up -d --build
+*(⚠️ **Important for Windows users:** Since we installed Docker inside WSL in the prerequisites, ensure you are executing this command **inside your WSL terminal**, not in standard PowerShell or Git Bash).*
 
-*(Note: On Linux or WSL environments, you might need to use `sudo docker compose up -d --build` depending on your user permissions).*
+    ```bash
+    sudo docker compose up -d --build
+    ```
 
 ### 3. Access the Application
 Once the containers are up and running, the Nginx web server will serve the frontend at:

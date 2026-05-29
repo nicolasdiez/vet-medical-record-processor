@@ -1,7 +1,10 @@
 import pytest
+
 from app.config import settings
-from backend.app.infrastructure.outbound.gemini_medical_record_extractor import LLMGeminiMedicalRecordExtractorAdapter
-from app.domain.entities import Pet, MedicalRecord
+from app.domain.entities import MedicalRecord, Pet
+from app.infrastructure.outbound.gemini_medical_record_extractor import (
+    LLMGeminiMedicalRecordExtractorAdapter,
+)
 
 
 @pytest.fixture

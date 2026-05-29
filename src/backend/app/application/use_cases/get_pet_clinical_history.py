@@ -4,6 +4,7 @@ from app.domain.entities import MedicalRecord
 from app.domain.ports.inbound.interfaces import GetPetClinicalHistoryUseCasePort
 from app.domain.ports.outbound.interfaces import MedicalRecordRepositoryPort
 
+
 class GetPetClinicalHistoryUseCase(GetPetClinicalHistoryUseCasePort):
     """
     Application service that retrieves the complete medical history for a given pet.

@@ -1,6 +1,10 @@
-import pytest
 import os
-from backend.app.infrastructure.outbound.pdf_text_extractor import PDFFileTextExtractorAdapter
+
+import pytest
+
+from app.infrastructure.outbound.pdf_text_extractor import (
+    PDFFileTextExtractorAdapter,
+)
 
 # Resolve the absolute path to the fixtures directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

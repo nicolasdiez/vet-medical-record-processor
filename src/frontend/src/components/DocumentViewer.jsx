@@ -7,6 +7,8 @@ export default function DocumentViewer({ file }) {
     // When a valid PDF is received, create a temporary local URL to display it
     if (file && file.type === "application/pdf") {
       const url = URL.createObjectURL(file);
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPdfUrl(url);
       
       // Clean up memory when the component unmounts

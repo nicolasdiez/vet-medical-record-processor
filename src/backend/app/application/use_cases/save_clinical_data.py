@@ -1,12 +1,14 @@
 from typing import List
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.entities import Pet, MedicalRecord
+from app.domain.entities import MedicalRecord, Pet
 from app.domain.ports.inbound.interfaces import SaveClinicalDataUseCasePort
 from app.domain.ports.outbound.interfaces import (
+    MedicalRecordRepositoryPort,
     PetRepositoryPort,
-    MedicalRecordRepositoryPort
 )
+
 
 class SaveClinicalDataUseCase(SaveClinicalDataUseCasePort):
     """

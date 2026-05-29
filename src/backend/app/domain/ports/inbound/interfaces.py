@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Optional
-from app.domain.entities import Pet, MedicalRecord
+from typing import List, Optional, Tuple
+
+from app.domain.entities import MedicalRecord, Pet
 from app.domain.ports.outbound.interfaces import FileTextExtractorPort
+
 
 class ExtractClinicalDataUseCasePort(ABC):
     """
@@ -10,7 +12,12 @@ class ExtractClinicalDataUseCasePort(ABC):
     """
     
     @abstractmethod
-    async def execute(self, file_content: bytes, file_extractor: FileTextExtractorPort) -> Tuple[Optional[Pet], List[MedicalRecord]]:
+    async def execute(
+        self, 
+        file_content: bytes, 
+        filename: str, 
+        file_extractor: FileTextExtractorPort
+    ) -> Tuple[Optional[Pet], List[MedicalRecord]]:
         pass
 
 

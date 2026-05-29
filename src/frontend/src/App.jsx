@@ -64,8 +64,6 @@ function App() {
         })
       };
 
-      console.log("Sanitized payload sent to DB:", payload);
-
       // Call the API service
       await saveClinicalData(payload);
 

@@ -1,6 +1,8 @@
-from sqlalchemy import Column, String, Date, ForeignKey, JSON
+from sqlalchemy import JSON, Column, Date, ForeignKey, String
 from sqlalchemy.orm import relationship
+
 from app.infrastructure.outbound.persistence.database import Base
+
 
 class PetORM(Base):
     """

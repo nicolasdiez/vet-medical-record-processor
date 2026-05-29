@@ -1,6 +1,9 @@
-import fitz  # PyMuPDF
 import asyncio
+
+import fitz  # type: ignore[import-untyped]
+
 from app.domain.ports.outbound.interfaces import FileTextExtractorPort
+
 
 class PDFFileTextExtractorAdapter(FileTextExtractorPort):
     """

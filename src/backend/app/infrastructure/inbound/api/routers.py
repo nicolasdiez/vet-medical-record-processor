@@ -1,15 +1,23 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends
 from typing import List
 
-from app.domain.entities import Pet, MedicalRecord
-from app.domain.ports.inbound.interfaces import ExtractClinicalDataUseCasePort, SaveClinicalDataUseCasePort, GetPetClinicalHistoryUseCasePort
-from app.application.use_cases.save_clinical_data import SaveClinicalDataUseCase
-from app.infrastructure.outbound.pdf_text_extractor import PDFFileTextExtractorAdapter
-from .schemas import (
-    ProcessDocumentResponse, PetCreateDTO, 
-    MedicalRecordCreateDTO, MedicalRecordResponse, ClinicalDataSaveDTO
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+
+from app.domain.entities import MedicalRecord, Pet
+from app.domain.ports.inbound.interfaces import (
+    ExtractClinicalDataUseCasePort,
+    GetPetClinicalHistoryUseCasePort,
+    SaveClinicalDataUseCasePort,
 )
-from app.application.use_cases.get_pet_clinical_history import GetPetClinicalHistoryUseCase
+from app.infrastructure.outbound.pdf_text_extractor import PDFFileTextExtractorAdapter
+
+from .schemas import (
+    ClinicalDataSaveDTO,
+    MedicalRecordCreateDTO,
+    MedicalRecordResponse,
+    PetCreateDTO,
+    ProcessDocumentResponse,
+)
+
 
 # ---------------------------------------------------------
 # FastAPI Dependency Injection Mechanism - Placeholders (Injected from main.py)
@@ -36,7 +44,12 @@ documents_router = APIRouter(prefix="/api/v1/clinical-documents", tags=["Clinica
 async def process_document(
     file: UploadFile = File(...),
     use_case: ExtractClinicalDataUseCasePort = Depends(get_extract_use_case)
-):
+) -> ProcessDocumentResponse:
+    """
+    Phase 1 of the Human-in-the-Loop flow: AI Processing.
+    Processes an unstructured clinical document using AI to extract structured entities 
+    without persisting them. Returns mapped data for human validation.
+    """
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
 
@@ -70,7 +83,6 @@ async def process_document(
             extracted_records=records_dto
         )
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -87,7 +99,7 @@ clinical_data_router = APIRouter(prefix="/api/v1/clinical-data", tags=["Clinical
 async def save_clinical_data(
     payload: ClinicalDataSaveDTO,
     use_case: SaveClinicalDataUseCasePort = Depends(get_save_use_case)
-):
+) -> dict[str, str]:
     """
     Phase 3 of the Human-in-the-Loop flow: Persistence.
     Receives the unified, human-corrected payload and persists it atomically.
@@ -118,7 +130,7 @@ pets_router = APIRouter(prefix="/api/v1/pets", tags=["Pets History"])
 async def list_pet_medical_records(
     pet_id: str,
     use_case: GetPetClinicalHistoryUseCasePort = Depends(get_history_use_case)
-):
+) -> List[MedicalRecordResponse]:
     """
     Retrieves the complete clinical history (all medical records) associated 
     with a specific pet. Used by the frontend to display the patient's timeline.

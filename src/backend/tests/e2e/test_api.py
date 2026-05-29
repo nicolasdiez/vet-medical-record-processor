@@ -1,12 +1,12 @@
-import os
 import uuid
-from pathlib import Path
-from fastapi.testclient import TestClient
-from unittest.mock import patch
 from datetime import date
+from pathlib import Path
+from unittest.mock import patch
 
+from fastapi.testclient import TestClient
+
+from app.domain.entities import MedicalRecord, Pet
 from app.main import app
-from app.domain.entities import Pet, MedicalRecord
 
 # UUIDs for the mock entities
 mock_pet_id = str(uuid.uuid4())
@@ -35,7 +35,10 @@ def test_full_clinical_flow_e2e():
         assert resp_health.status_code == 200
 
         # --- 2. PHASE 1: PROCESS DOCUMENT ---
-        target_mock = "app.infrastructure.outbound.gemini_medical_record_extractor.LLMGeminiMedicalRecordExtractorAdapter.extract_entities"
+        target_mock = (
+        "app.infrastructure.outbound.gemini_medical_record_extractor."
+        "LLMGeminiMedicalRecordExtractorAdapter.extract_entities"
+        )
         
         with patch(target_mock) as mock_extract:
             mock_extract.return_value = (mock_pet, [mock_record])

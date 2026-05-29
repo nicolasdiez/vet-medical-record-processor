@@ -1,10 +1,12 @@
+from typing import List, Optional, Tuple
+
 import instructor
 from google import genai
 from pydantic import BaseModel
-from typing import List, Optional, Tuple
 
-from app.domain.entities import Pet, MedicalRecord
+from app.domain.entities import MedicalRecord, Pet
 from app.domain.ports.outbound.interfaces import MedicalRecordExtractorPort
+
 
 class ExtractionResponse(BaseModel):
     pet: Optional[Pet] = None
@@ -23,7 +25,8 @@ class LLMGeminiMedicalRecordExtractorAdapter(MedicalRecordExtractorPort):
             mode=instructor.Mode.GENAI_STRUCTURED_OUTPUTS,
         )
 
-    # Method naming balanced between generic and specific, to allow more entities to be extracted from the text in the future
+    # Method naming balanced between generic and specific, to allow more entities
+    # to be extracted from the text in the future
     async def extract_entities(self, text: str) -> Tuple[Optional[Pet], List[MedicalRecord]]:
         prompt = (
             "You are an expert veterinary assistant. Extract all clinical information "

@@ -1,10 +1,13 @@
+from datetime import date
+from typing import Any, List, cast
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 
-from app.domain.entities import MedicalRecord, Vitals, Medication
+from app.domain.entities import MedicalRecord, Medication, Vitals
 from app.domain.ports.outbound.interfaces import MedicalRecordRepositoryPort
 from app.infrastructure.outbound.persistence.models import MedicalRecordORM
+
 
 class SQLMedicalRecordRepositoryAdapter(MedicalRecordRepositoryPort):
     """
@@ -29,7 +32,7 @@ class SQLMedicalRecordRepositoryAdapter(MedicalRecordRepositoryPort):
                 id=str(record.id),
                 pet_id=str(record.pet_id),
                 date=record.date,
-                diagnosis=record.diagnosis,
+                diagnosis=cast(str, record.diagnosis),
                 vitals=vitals_dict,
                 medications=meds_list
             )
@@ -49,13 +52,13 @@ class SQLMedicalRecordRepositoryAdapter(MedicalRecordRepositoryPort):
         for orm in orm_records:
             # Reconstruct Value Objects from JSON dictionaries
             vitals = Vitals(**orm.vitals) if orm.vitals else None
-            medications = [Medication(**med) for med in orm.medications] if orm.medications else []
+            medications = [Medication(**med) for med in cast(list[Any], orm.medications)] if orm.medications else []
 
             domain_record = MedicalRecord(
-                id=orm.id,
-                pet_id=orm.pet_id,
-                date=orm.date,
-                diagnosis=orm.diagnosis,
+                id=cast(str, orm.id),
+                pet_id=cast(str, orm.pet_id),
+                date=cast(date, orm.date),
+                diagnosis=cast(str, orm.diagnosis),
                 vitals=vitals,
                 medications=medications
             )

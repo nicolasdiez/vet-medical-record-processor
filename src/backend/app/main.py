@@ -1,39 +1,49 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
+
+# --- Use Cases ---
+from app.application.use_cases.extract_clinical_data import ExtractClinicalDataUseCase
+from app.application.use_cases.get_pet_clinical_history import (
+    GetPetClinicalHistoryUseCase,
+)
+from app.application.use_cases.save_clinical_data import SaveClinicalDataUseCase
 
 # --- Config ---
 from app.config import settings
 
 # --- Routers ---
 from app.infrastructure.inbound.api.routers import (
-    documents_router, 
-    pets_router, 
     clinical_data_router,
+    documents_router,
     # The placeholder functions than need to be overriden with injections:
-    get_extract_use_case, 
-    get_save_use_case, 
-    get_history_use_case
+    get_extract_use_case,
+    get_history_use_case,
+    get_save_use_case,
+    pets_router,
+)
+from app.infrastructure.outbound.gemini_medical_record_extractor import (
+    LLMGeminiMedicalRecordExtractorAdapter,
 )
 
 # --- Database & Models ---
-from app.infrastructure.outbound.persistence.database import engine, AsyncSessionLocal
+from app.infrastructure.outbound.persistence.database import AsyncSessionLocal, engine
 from app.infrastructure.outbound.persistence.models import Base
+from app.infrastructure.outbound.persistence.sql_medical_record_repository import (
+    SQLMedicalRecordRepositoryAdapter,
+)
 
 # --- Adapters ---
-from app.infrastructure.outbound.persistence.sql_pet_repository import SQLPetRepositoryAdapter
-from app.infrastructure.outbound.persistence.sql_medical_record_repository import SQLMedicalRecordRepositoryAdapter
-from app.infrastructure.outbound.gemini_medical_record_extractor import LLMGeminiMedicalRecordExtractorAdapter
-
-# --- Use Cases ---
-from app.application.use_cases.extract_clinical_data import ExtractClinicalDataUseCase
-from app.application.use_cases.save_clinical_data import SaveClinicalDataUseCase
-from app.application.use_cases.get_pet_clinical_history import GetPetClinicalHistoryUseCase
+from app.infrastructure.outbound.persistence.sql_pet_repository import (
+    SQLPetRepositoryAdapter,
+)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     Application lifespan manager.
     Initializes the SQLite database tables on startup.
@@ -115,5 +125,5 @@ app.dependency_overrides[get_history_use_case] = build_history_use_case
 
 # App health check
 @app.get("/health", tags=["System"])
-async def health_check():
+async def health_check() -> dict[str, str]:
     return {"status": "ok", "message": "Backend is running successfully!"}

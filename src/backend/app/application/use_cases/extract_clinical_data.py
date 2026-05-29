@@ -1,12 +1,13 @@
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
-from app.domain.entities import Pet, MedicalRecord
+from app.domain.entities import MedicalRecord, Pet
 from app.domain.ports.inbound.interfaces import ExtractClinicalDataUseCasePort
 from app.domain.ports.outbound.interfaces import (
     FileTextExtractorPort,
     MedicalRecordExtractorPort,
-    PetRepositoryPort
+    PetRepositoryPort,
 )
+
 
 class ExtractClinicalDataUseCase(ExtractClinicalDataUseCasePort):
     """
@@ -23,7 +24,13 @@ class ExtractClinicalDataUseCase(ExtractClinicalDataUseCasePort):
         self.medical_extractor = medical_extractor
         self.pet_repository = pet_repository
 
-    async def execute(self, file_content: bytes, filename: str, file_extractor: FileTextExtractorPort) -> Tuple[Optional[Pet], List[MedicalRecord]]:
+    async def execute(
+        self, 
+        file_content: bytes, 
+        filename: str, 
+        file_extractor: FileTextExtractorPort
+    ) -> Tuple[Optional[Pet], List[MedicalRecord]]:
+        
         # 1. Extract raw text from the binary document using the injected strategy
         raw_text = await file_extractor.extract_text(file_content, filename)
 

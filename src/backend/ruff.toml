@@ -1,0 +1,12 @@
+# ==============================================================================
+# Configuration for Ruff (https://github.com/astral-sh/ruff)
+# Purpose: Static code analysis, linting, and automatic import sorting.
+#
+# To run this analysis manually, use the following command:
+#   ruff check . --fix
+# ==============================================================================
+
+line-length = 120           # allow code lines up to 120 chars
+
+[lint]
+select = ["E", "F", "I"]    # F: Errors, E: Style, I: Imports

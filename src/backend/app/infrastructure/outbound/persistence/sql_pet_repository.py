@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import Optional, cast
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -41,10 +42,10 @@ class SQLPetRepositoryAdapter(PetRepositoryPort):
             return None
 
         return Pet(
-            id=orm_pet.id,
-            name=orm_pet.name,
-            species=orm_pet.species,
-            breed=orm_pet.breed
+            id=cast(str, orm_pet.id),
+            name=cast(str, orm_pet.name),
+            species=cast(str, orm_pet.species),
+            breed=cast(str, orm_pet.breed) if orm_pet.breed else None
         )
 
     async def find_by_name_and_species(self, name: str, species: str) -> Optional[Pet]:
@@ -63,8 +64,8 @@ class SQLPetRepositoryAdapter(PetRepositoryPort):
             return None
 
         return Pet(
-            id=orm_pet.id,
-            name=orm_pet.name,
-            species=orm_pet.species,
-            breed=orm_pet.breed
+            id=cast(str, orm_pet.id),
+            name=cast(str, orm_pet.name),
+            species=cast(str, orm_pet.species),
+            breed=cast(str, orm_pet.breed) if orm_pet.breed else None
         )

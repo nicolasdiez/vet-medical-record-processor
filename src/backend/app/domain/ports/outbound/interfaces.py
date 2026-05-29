@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Tuple
-from app.domain.entities import Pet, MedicalRecord
+
+from app.domain.entities import MedicalRecord, Pet
 
 
 class FileTextExtractorPort(ABC):
@@ -51,7 +52,7 @@ class MedicalRecordRepositoryPort(ABC):
     Contract for persisting and retrieving MedicalRecord entities.
     """
     @abstractmethod
-    async def save_bulk(self, records: List[MedicalRecord]) -> List[MedicalRecord]:
+    async def save_bulk(self, records: List[MedicalRecord]) -> None:
         pass
 
     @abstractmethod

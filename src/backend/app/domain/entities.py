@@ -1,9 +1,11 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
 import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
 
 # Import our strictly immutable Value Objects
-from .value_objects import Vitals, Medication
+from .value_objects import Medication, Vitals
+
 
 class Pet(BaseModel):
     """

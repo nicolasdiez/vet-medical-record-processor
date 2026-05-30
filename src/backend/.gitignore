@@ -62,5 +62,9 @@ uploads/
 htmlcov/
 .tox/
 
+# Static analysis and linting caches
+.ruff_cache/
+.mypy_cache/
+
 # Allow environment variables template
 !.env.example

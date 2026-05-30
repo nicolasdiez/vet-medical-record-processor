@@ -11,26 +11,43 @@ from app.domain.ports.outbound.interfaces import (
 
 
 class SaveClinicalDataUseCase(SaveClinicalDataUseCasePort):
-    """
-    Application service that orchestrates Phase 3: Validation & Persistence.
-    It receives confirmed data from the UI and persists it into the database
-    ensuring atomicity (transactional integrity).
+    """Orchestrates Phase 3 of the Human-in-the-Loop flow: Persistence.
+
+    Receives the validated and potentially user-corrected Domain Entities from the 
+    interface and persists them atomically to the database using an active transaction.
+
+    Attributes:
+        pet_repository (PetRepositoryPort): Outbound port to save pet data.
+        medical_record_repository (MedicalRecordRepositoryPort): Outbound port to save records.
+        session (AsyncSession): The database session to manage the transaction.
     """
 
     def __init__(
         self,
         pet_repository: PetRepositoryPort,
         medical_record_repository: MedicalRecordRepositoryPort,
-        session: AsyncSession  # inject the session to control the transaction (atomic - all or nothing)
+        session: AsyncSession  # inject the session to control the transaction (atomic:  all or nothing)
     ):
+        """Initializes the use case with required repositories and DB session.
+
+        Args:
+            pet_repository (PetRepositoryPort): Port for Pet persistence.
+            medical_record_repository (MedicalRecordRepositoryPort): Port for MedicalRecord persistence.
+            session (AsyncSession): Active SQLAlchemy async session for atomic commits.
+        """
         self.pet_repository = pet_repository
         self.medical_record_repository = medical_record_repository
         self.session = session
 
     async def execute(self, pet: Pet, records: List[MedicalRecord]) -> None:
-        """
-        Saves the pet and its medical records in a single transaction.
-        If any step fails, the transaction is rolled back.
+        """Atomically saves the clinical data into the database.
+
+        Args:
+            pet (Pet): The verified Pet domain entity.
+            records (List[MedicalRecord]): The verified list of MedicalRecord entities.
+
+        Raises:
+            Exception: If the database transaction fails to commit, it will be rolled back.
         """
         try:
             # 1. Persist Pet info (Update or Insert)

@@ -9,17 +9,27 @@ from app.infrastructure.outbound.persistence.models import PetORM
 
 
 class SQLPetRepositoryAdapter(PetRepositoryPort):
-    """
-    SQLAlchemy implementation of the PetRepositoryPort.
-    Handles persistence and retrieval of Pet entities from the database.
+    """SQLAlchemy implementation of the PetRepositoryPort.
+
+    Handles the translation between pure domain entities and ORM models.
+
+    Attributes:
+        session (AsyncSession): The active database session.
     """
 
     def __init__(self, session: AsyncSession):
+        """Initializes the adapter with a database session.
+
+        Args:
+            session (AsyncSession): The SQLAlchemy async session to use.
+        """
         self.session = session
 
     async def save(self, pet: Pet) -> None:
-        """
-        Inserts a new pet or updates an existing one using an upsert (merge).
+        """Inserts a new pet or updates an existing one using an upsert (merge).
+
+        Args:
+            pet (Pet): The Pet domain entity to persist.
         """
         pet_orm = PetORM(
             id=str(pet.id),
@@ -31,8 +41,13 @@ class SQLPetRepositoryAdapter(PetRepositoryPort):
         await self.session.merge(pet_orm)
 
     async def get_by_id(self, pet_id: str) -> Optional[Pet]:
-        """
-        Retrieves a pet by its unique identifier.
+        """Retrieves a pet by its unique identifier.
+
+        Args:
+            pet_id (str): The unique ID of the pet.
+
+        Returns:
+            Optional[Pet]: The reconstructed Pet domain entity if found, None otherwise.
         """
         stmt = select(PetORM).where(PetORM.id == pet_id)
         result = await self.session.execute(stmt)
@@ -49,9 +64,14 @@ class SQLPetRepositoryAdapter(PetRepositoryPort):
         )
 
     async def find_by_name_and_species(self, name: str, species: str) -> Optional[Pet]:
-        """
-        Finds a pet by its name and species (used in Phase 1 to check for existing pets).
-        Uses case-insensitive matching.
+        """Finds a pet by its name and species using case-insensitive matching.
+
+        Args:
+            name (str): The name of the pet.
+            species (str): The species of the pet.
+
+        Returns:
+            Optional[Pet]: The reconstructed Pet domain entity if found, None otherwise.
         """
         stmt = select(PetORM).where(
             PetORM.name.ilike(name),

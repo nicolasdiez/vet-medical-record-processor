@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     async with engine.begin() as conn:
         # In a production environment with PostgreSQL, use Alembic for migrations.
-        # For this MVP with SQLite, we create tables directly on startup.
+        # For this MVP with SQLite, create tables directly on startup.
         await conn.run_sync(Base.metadata.create_all)
     yield
     # Cleanup on shutdown

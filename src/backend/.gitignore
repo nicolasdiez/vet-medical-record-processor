@@ -3,8 +3,10 @@
 # Ignore all env files
 .env*
 
-# Ignore real clinical PDFs in fixtures
+# Ignore real clinical PDFs in fixtures to prevent PII leaks
 src/backend/tests/fixtures/*.pdf
+# Allow specific synthetic dummy PDFs for automated testing
+!src/backend/tests/fixtures/clinical_history_1.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -10,18 +10,31 @@ from app.infrastructure.outbound.persistence.models import MedicalRecordORM
 
 
 class SQLMedicalRecordRepositoryAdapter(MedicalRecordRepositoryPort):
-    """
-    SQLAlchemy implementation of the MedicalRecordRepositoryPort.
-    Handles the translation between pure domain entities and ORM models.
+    """SQLAlchemy implementation of the MedicalRecordRepositoryPort.
+
+    Handles the translation between pure domain entities and ORM models, including
+    the serialization and deserialization of Value Objects into JSON.
+
+    Attributes:
+        session (AsyncSession): The active database session.
     """
     
     def __init__(self, session: AsyncSession):
+        """Initializes the adapter with a database session.
+
+        Args:
+            session (AsyncSession): The SQLAlchemy async session to use.
+        """
         self.session = session
 
     async def save_bulk(self, records: List[MedicalRecord]) -> None:
-        """
-        Saves or updates a list of medical records in the database.
-        Value objects are serialized into JSON columns.
+        """Saves or updates a list of medical records in the database.
+
+        Serializes internal Value Objects (like Vitals and Medications) into 
+        dictionaries so they can be stored in JSON columns.
+
+        Args:
+            records (List[MedicalRecord]): The list of domain records to persist.
         """
         for record in records:
             # Serialize Value Objects to dictionaries for JSON columns
@@ -40,9 +53,16 @@ class SQLMedicalRecordRepositoryAdapter(MedicalRecordRepositoryPort):
             await self.session.merge(record_orm)
 
     async def get_by_pet_id(self, pet_id: str) -> List[MedicalRecord]:
-        """
-        Retrieves the complete clinical history for a specific pet from the database 
-        and reconstructs the domain entities.
+        """Retrieves the complete clinical history for a specific pet.
+
+        Queries the database and reconstructs the pure Domain Entities, 
+        including parsing JSON columns back into Value Objects.
+
+        Args:
+            pet_id (str): The unique identifier of the pet.
+
+        Returns:
+            List[MedicalRecord]: The list of medical records associated with the pet.
         """
         stmt = select(MedicalRecordORM).where(MedicalRecordORM.pet_id == pet_id)
         result = await self.session.execute(stmt)

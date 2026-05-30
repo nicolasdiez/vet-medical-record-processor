@@ -31,8 +31,9 @@ async def get_save_use_case() -> SaveClinicalDataUseCasePort:
 async def get_history_use_case() -> GetPetClinicalHistoryUseCasePort:
     raise NotImplementedError()
 
+
 # ---------------------------------------------------------
-# Router 1: Clinical Documents (Phase 1: AI Processing)
+# Router #1: Clinical Documents (Phase 1: AI Processing)
 # ---------------------------------------------------------
 documents_router = APIRouter(prefix="/api/v1/clinical-documents", tags=["Clinical Documents"])
 
@@ -87,7 +88,7 @@ async def process_document(
 
 
 # ---------------------------------------------------------
-# Router 2: Clinical Data (Phase 3: Persistence)
+# Router #2: Clinical Data (Phase 3: Persistence)
 # ---------------------------------------------------------
 clinical_data_router = APIRouter(prefix="/api/v1/clinical-data", tags=["Clinical Data Persistence"])
 
@@ -118,7 +119,7 @@ async def save_clinical_data(
 
 
 # ---------------------------------------------------------
-# Router 3: Pet History (For GET requests)
+# Router #3: Pet History (For GET requests)
 # ---------------------------------------------------------
 pets_router = APIRouter(prefix="/api/v1/pets", tags=["Pets History"])
 

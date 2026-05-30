@@ -5,8 +5,16 @@ from app.infrastructure.outbound.persistence.database import Base
 
 
 class PetORM(Base):
-    """
-    SQLAlchemy ORM model for the 'pets' table.
+    """SQLAlchemy ORM model for the pets table.
+
+    Maps the pure Pet domain entity to the relational database schema.
+
+    Attributes:
+        id (Column): Primary key, unique identifier for the pet (String).
+        name (Column): The name of the pet (String).
+        species (Column): The species of the pet (String).
+        breed (Column): The breed of the pet, if known (String, nullable).
+        records (relationship): One-to-many relationship with MedicalRecordORM.
     """
     __tablename__ = "pets"
 
@@ -20,9 +28,19 @@ class PetORM(Base):
 
 
 class MedicalRecordORM(Base):
-    """
-    SQLAlchemy ORM model for the 'medical_records' table.
-    Value objects (vitals, medications) are stored as JSON for simplicity in the MVP.
+    """SQLAlchemy ORM model for the medical_records table.
+
+    Maps the pure MedicalRecord domain entity to the relational database schema, 
+    storing Value Objects as JSON columns.
+
+    Attributes:
+        id (Column): Primary key, unique identifier for the medical record (String).
+        pet_id (Column): Foreign key linking to the associated pet (String).
+        date (Column): Date of the clinical encounter (Date).
+        diagnosis (Column): Veterinarian's diagnosis notes (String).
+        vitals (Column): JSON column storing the Vitals value object.
+        medications (Column): JSON column storing the list of Medication value objects.
+        pet (relationship): Many-to-one relationship with PetORM.
     """
     __tablename__ = "medical_records"
 

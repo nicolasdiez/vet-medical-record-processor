@@ -98,6 +98,7 @@ Execute the following command from the root directory to build and start the con
     ```bash
     sudo docker compose up -d --build
     ```
+*("sudo docker compose down" to stop all the containers running)*
 
 ### 3. Access the Application
 Once the containers are up and running, the Nginx web server will serve the frontend at:

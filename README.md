@@ -2,7 +2,7 @@
 
 [![Backend Tests CI](https://github.com/nicolasdiez/vet-medical-record-processor/actions/workflows/tests.yml/badge.svg)](https://github.com/nicolasdiez/vet-medical-record-processor/actions/workflows/tests.yml)
 
-An AI-powered, full-stack application designed to automate the extraction, structuring, and persistence of clinical veterinary records from unstructured PDF documents. 
+A full-stack application designed to automate the extraction, structuring, and persistence of clinical veterinary records from unstructured PDF documents. 
 
 Built with a strong emphasis on clean code, validation, and user experience.
 

@@ -100,9 +100,11 @@ You can run the entire application stack (Frontend, Backend, Database, and Netwo
        ```
 
 ### 1. Environment Setup
-Create a `.env` file in the **root** directory of the project and add your Gemini API Key:
+Create a `.env` file in the **root** directory of the project. Docker Compose will use this file to inject the variables securely into the containers:
 
+    ENVIRONMENT=production
     GEMINI_API_KEY=your_api_key_here
+    GEMINI_MODEL=gemini-2.5-flash
 
 ### 2. Run the Stack
 Execute the following command from the root directory to build and start the containers in detached mode. 

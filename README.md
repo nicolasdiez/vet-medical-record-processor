@@ -45,8 +45,9 @@ Navigate to the backend directory, create a virtual environment, and install dep
 
 Create a `.env.dev` file in the `src/backend` directory:
 
-    GEMINI_API_KEY=your_api_key_here
     ENVIRONMENT=development
+    GEMINI_API_KEY=your_api_key_here
+    GEMINI_MODEL=gemini-2.5-flash
 
 Run the FastAPI server:
 

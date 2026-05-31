@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 load_dotenv(".env.dev")
 
 class Settings:
+    # Environment type (e.g., development, production)
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    
     # We add the dummy key as a fallback right here
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "test_dummy_key")
     

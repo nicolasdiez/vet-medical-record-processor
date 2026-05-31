@@ -78,12 +78,25 @@ You can run the entire application stack (Frontend, Backend, Database, and Netwo
 
 ### Prerequisites
 * Docker and Docker Compose installed.
-* **For Windows users:** WSL 2 (Windows Subsystem for Linux) is required.
-  * To install WSL, open PowerShell as Administrator and run: `wsl --install`
-  * Restart your computer and set up your Linux username/password.
-  * If using **Git Bash**, simply type `wsl` to enter the Linux environment. Then, to install the lightweight **Docker Engine** without the heavy Docker Desktop app, run:
-    `curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh`
-  * Finally, start the Docker service with: `sudo service docker start`
+* **For Linux users:** You can quickly install the Docker Engine using the official convenience script:
+  ```bash
+  curl -fsSL [https://get.docker.com](https://get.docker.com) -o get-docker.sh && sudo sh get-docker.sh
+  ```
+* **For Mac users:** Download and install [Docker Desktop](https://docs.docker.com/desktop/install/mac-install/).
+* **For Windows users:** WSL 2 (Windows Subsystem for Linux) is highly recommended for optimal performance.
+  1. Open PowerShell as Administrator and install WSL:
+     ```powershell
+     wsl --install
+     ```
+  2. Restart your computer and set up your Linux username and password.
+  3. Open your WSL terminal (or type `wsl` inside Git Bash) and install the lightweight Docker Engine:
+     ```bash
+     curl -fsSL [https://get.docker.com](https://get.docker.com) -o get-docker.sh && sudo sh get-docker.sh
+     ```
+  4. Finally, start the Docker service:
+     ```bash
+     sudo service docker start
+     ```
 
 ### 1. Environment Setup
 Create a `.env` file in the **root** directory of the project and add your Gemini API Key:
